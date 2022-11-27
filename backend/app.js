@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const activitypubExpress = require('activitypub-express');
+const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -44,6 +45,7 @@ const apex = activitypubExpress({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(
   express.json({type: apex.consts.jsonldTypes}),
@@ -78,13 +80,13 @@ app.on('apex-outbox', ({activity, object, actor}) => {
   if (activity.type === 'Create') {
     console.log(`New ${object.type} from ${actor}`);
   }
-})
+});
 
 app.on('apex-inbox', ({activity, object, actor, recipient}) => {
   if (activity.type === 'Create') {
     console.log(`New ${object.type} from ${actor} to ${recipient}`);
   }
-})
+});
 
 // Other routes
 app.use(cookieParser());
